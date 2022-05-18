@@ -1,0 +1,75 @@
+#!/usr/bin/env python
+
+from pprint import pprint
+import argparse,json,re,pathlib,os
+import schedulers
+
+
+# parse arguments
+parser = argparse.ArgumentParser(description="a wrapper for a job submission command")
+parser.add_argument("-t", "--show-template", action='store_true', help="show template")
+parser.add_argument("-p", "--parameters", help="parameters")
+parser.add_argument("-l", "--log", help="log directory path", default=".")
+parser.add_argument("-d", "--dir", help="work directory", default=".")
+parser.add_argument("job_script")
+parsed = parser.parse_args()
+
+scheduler = schedulers.create("none");
+
+if parsed.show_template:
+  t = {
+    "parameters": scheduler.PARAMETERS,
+    "template": scheduler.TEMPLATE.splitlines(keepends=False)
+  }
+  print(json.dumps(t, indent=2))
+  exit(0)
+
+
+def verify_parameters(parameters, scheduler):
+  params = dict(parameters)
+  # merge default parameters
+  for (key,definition) in scheduler.PARAMETERS.items():
+    if not key in parameters:
+      params[key] = definition["default"]
+
+  # verify there is no unknown key
+  unknown_keys = set(params.keys()) - set(scheduler.PARAMETERS)
+  if unknown_keys:
+    raise Exception(f"unknown keys {unknown_keys} exist")
+
+  # verify parameter format
+  for (key,definition) in scheduler.PARAMETERS.items():
+    if not re.match(definition["format"], str(params[key])):
+      raise Exception(f"invalid parameter format: {key} {params[key]} {definition['format']}")
+
+  # scheduler-specific validation of parameters
+  scheduler.validate_parameters(params)
+  return params
+
+parameters = verify_parameters(json.loads(parsed.parameters), scheduler)
+job_file = pathlib.Path(parsed.job_script).absolute()
+work_dir = pathlib.Path(parsed.dir).absolute()
+log_dir  = pathlib.Path(parsed.log).absolute()
+
+os.makedirs(work_dir, exist_ok=True)
+os.makedirs(log_dir, exist_ok=True)
+
+def prepare_parent_script(job_file, work_dir, parameters, scheduler):
+  rendered = scheduler.TEMPLATE.format(**parameters, _job_file = job_file, _work_dir = work_dir)
+
+  ps_path = work_dir.joinpath(job_file.stem + "_xsub.sh")
+  idx = 0
+  while os.path.exists(ps_path):
+    idx += 1
+    ps_path = work_dir.joinpath(job_file.stem + f"_xsub{idx}.sh")
+
+  with open(ps_path, mode='x') as f:
+    f.write(rendered)
+    f.flush()
+  return ps_path
+
+ps_path = prepare_parent_script(job_file, work_dir, parameters, scheduler)
+with open(log_dir.joinpath("xsub.log"), mode='w') as log:
+  output = scheduler.submit_job(ps_path, work_dir, log_dir, log, parameters)
+  log.flush()
+  print( json.dumps(output, indent=2) )
