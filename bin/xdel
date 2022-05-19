@@ -12,7 +12,7 @@ parsed = parser.parse_args()
 scheduler = schedulers.create();
 
 job_id = parsed.job_id
-stat = scheduler.multiple_status([job_id])[job_id]["status"]
+stat = scheduler.multiple_status([job_id])[job_id][0]
 if stat == "finished":
   print(f"job is already finished or does not exist: {job_id}", file=sys.stderr)
 else:

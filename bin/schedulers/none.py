@@ -53,8 +53,8 @@ class NoneScheduler:
     cmd = f"ps -p {job_id} -o 'pgid'"   # get process group id of {job_id}
     result = subprocess.run(cmd, check=False, shell=True, capture_output=True)
     if result.returncode != 0:
-      return f"process {job_id} is not found"
+      return f"process for {job_id} is not found"
     pgid = int(result.stdout.decode().splitlines()[-1])  # process group id
     cmd = f"kill -TERM -{pgid}"
     subprocess.run(cmd, check=True)
-    return f"process group {pgid} is killed"
+    return f"process group {pgid} is successfully terminated"
