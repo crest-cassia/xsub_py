@@ -10,7 +10,7 @@ parser.add_argument("-m", "--multiple", help="print status of multiple job_ids",
 parser.add_argument("job_ids", nargs='*')
 parsed = parser.parse_args()
 
-scheduler = schedulers.create("none");
+scheduler = schedulers.create();
 
 if parsed.multiple:
   output = scheduler.multiple_status(parsed.job_ids)
