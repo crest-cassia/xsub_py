@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+
+import argparse,json,sys
+import schedulers
+
+
+# parse arguments
+parser = argparse.ArgumentParser(description="a wrapper for a job cancel command")
+parser.add_argument("job_id")
+parsed = parser.parse_args()
+
+scheduler = schedulers.create("none");
+
+job_id = parsed.job_id
+stat = scheduler.multiple_status([job_id])[job_id]["status"]
+if stat == "finished":
+  print(f"job is already finished or does not exist: {job_id}", file=sys.stderr)
+else:
+  output = scheduler.delete(job_id)
+  print(output)

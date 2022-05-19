@@ -5,7 +5,7 @@ import schedulers
 
 
 # parse arguments
-parser = argparse.ArgumentParser(description="a wrapper for a job submission command")
+parser = argparse.ArgumentParser(description="a wrapper for a job status command")
 parser.add_argument("-m", "--multiple", action='store_true', help="print status of multiple job_ids")
 parser.add_argument("job_ids", nargs='*')
 parsed = parser.parse_args()
@@ -20,7 +20,7 @@ elif parsed.multiple:
   print( json.dumps(output, indent=2) )
 else:
   if len(parsed.job_ids) > 1:
-    print("[Error] accept only single job_id. To get status of multiple job_ids, use `-m` option.")
+    print("[Error] accept only single job_id. To get status of multiple job_ids, use `-m` option.", file=sys.stderr)
     raise Exception("multiple job_ids are given")
   job_id = parsed.job_ids[0]
   output = scheduler.multiple_status([job_id])[job_id]

@@ -68,7 +68,7 @@ def prepare_parent_script(job_file, work_dir, parameters, scheduler):
   return ps_path
 
 ps_path = prepare_parent_script(job_file, work_dir, parameters, scheduler)
-with open(log_dir.joinpath("xsub.log"), mode='w') as log:
+with open(log_dir.joinpath("xsub.log"), mode='a') as log:
   output = scheduler.submit_job(ps_path, work_dir, log_dir, log, parameters)
   log.flush()
   print( json.dumps(output, indent=2) )
