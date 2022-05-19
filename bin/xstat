@@ -1,27 +1,27 @@
 #!/usr/bin/env python
 
-import argparse,json
+import argparse,json,sys
 import schedulers
 
 
 # parse arguments
 parser = argparse.ArgumentParser(description="a wrapper for a job status command")
-parser.add_argument("-m", "--multiple", action='store_true', help="print status of multiple job_ids")
+parser.add_argument("-m", "--multiple", help="print status of multiple job_ids", action='store_true')
 parser.add_argument("job_ids", nargs='*')
 parsed = parser.parse_args()
 
 scheduler = schedulers.create("none");
 
-if len(parsed.job_ids) == 0:
-  output = scheduler.all_status()
-  print(output)
-elif parsed.multiple:
+if parsed.multiple:
   output = scheduler.multiple_status(parsed.job_ids)
   print( json.dumps(output, indent=2) )
-else:
+elif parsed.job_ids:
   if len(parsed.job_ids) > 1:
     print("[Error] accept only single job_id. To get status of multiple job_ids, use `-m` option.", file=sys.stderr)
-    raise Exception("multiple job_ids are given")
+    raise Exception("multiple job_ids are given without `-m`")
   job_id = parsed.job_ids[0]
   output = scheduler.multiple_status([job_id])[job_id]
   print( json.dumps(output, indent=2) )
+else:
+  output = scheduler.all_status()
+  print(output)
