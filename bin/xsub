@@ -50,7 +50,9 @@ def verify_parameters(parameters, scheduler):
   scheduler.validate_parameters(params)
   return params
 
-parameters = verify_parameters(json.loads(parsed.parameters), scheduler)
+
+parameters = json.loads(parsed.parameters) if parsed.parameters else {}
+parameters = verify_parameters(parameters, scheduler)
 job_file = pathlib.Path(parsed.job_script).absolute()
 work_dir = pathlib.Path(parsed.dir).absolute()
 log_dir  = pathlib.Path(parsed.log).absolute()
@@ -74,6 +76,11 @@ def prepare_parent_script(job_file, work_dir, parameters, scheduler):
 
 ps_path = prepare_parent_script(job_file, work_dir, parameters, scheduler)
 with open(log_dir.joinpath("xsub.log"), mode='a') as log:
-  output = scheduler.submit_job(ps_path, work_dir, log_dir, log, parameters)
+  job_id, raw_output = scheduler.submit_job(ps_path, work_dir, log_dir, log, parameters)
   log.flush()
+  output = {
+    "job_id": job_id,
+    "raw_output": [l.rstrip() for l in raw_output.splitlines()],
+    "parent_script": str(ps_path)
+  }
   print( json.dumps(output, indent=2) )

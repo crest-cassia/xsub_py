@@ -13,15 +13,18 @@ parsed = parser.parse_args()
 scheduler = schedulers.create();
 
 if parsed.multiple:
-  output = scheduler.multiple_status(parsed.job_ids)
+  result = scheduler.multiple_status(parsed.job_ids)
+  output = {}
+  for (k,v) in result.items():
+    output[k] = {"status": v[0], "raw_output": v[1]}
   print( json.dumps(output, indent=2) )
 elif parsed.job_ids:
   if len(parsed.job_ids) > 1:
     print("[Error] accept only single job_id. To get status of multiple job_ids, use `-m` option.", file=sys.stderr)
     raise Exception("multiple job_ids are given without `-m`")
   job_id = parsed.job_ids[0]
-  output = scheduler.multiple_status([job_id])[job_id]
-  print( json.dumps(output, indent=2) )
+  status,raw_output = scheduler.multiple_status([job_id])[job_id]
+  print( json.dumps({"status": status, "raw_output": raw_output}, indent=2) )
 else:
   output = scheduler.all_status()
   print(output)
