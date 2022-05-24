@@ -1,4 +1,5 @@
-import pathlib,io,os,subprocess,sys
+import pathlib,io,os,subprocess
+from typing import List,Tuple,Dict
 
 class NoneScheduler:
 
@@ -18,7 +19,7 @@ class NoneScheduler:
     pass
 
   @staticmethod
-  def submit_job(script_path: pathlib.Path, work_dir: pathlib.Path, log_dir: pathlib.Path, log: io.TextIOBase, parameters: dict) -> (str,str):
+  def submit_job(script_path: pathlib.Path, work_dir: pathlib.Path, log_dir: pathlib.Path, log: io.TextIOBase, parameters: dict) -> Tuple[str,str]:
     cmd = f"nohup bash {script_path.absolute()} > /dev/null 2>&1 < /dev/null & echo $!"
     log.write(f"{cmd} is invoked\n")
     output = ""
@@ -35,21 +36,21 @@ class NoneScheduler:
     return result.stdout.decode()
 
   @staticmethod
-  def multiple_status(job_ids: list[str]) -> dict[str,(str,str)]:
+  def multiple_status(job_ids: List[str]) -> Dict[str,Tuple[str,str]]:
     results = {}
     for job_id in job_ids:
       results[job_id] = NoneScheduler._status(job_id)
     return results
 
   @staticmethod
-  def _status(job_id: str):
+  def _status(job_id: str) -> Tuple[str,str]:
     cmd = f"ps -p {job_id}"
     result = subprocess.run(cmd, shell=True, check=False, capture_output=True)
     status = "running" if result.returncode == 0 else "finished"
     return (status, result.stdout.decode())
 
   @staticmethod
-  def delete(job_id) -> str:
+  def delete(job_id: str) -> str:
     cmd = f"ps -p {job_id} -o 'pgid'"   # get process group id of {job_id}
     result = subprocess.run(cmd, check=False, shell=True, capture_output=True)
     if result.returncode != 0:
