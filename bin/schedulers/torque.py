@@ -1,4 +1,4 @@
-import pathlib,io,os,subprocess,datetime,re
+import pathlib,io,subprocess,datetime,re
 from typing import List,Tuple,Dict
 
 class TorqueScheduler:
@@ -55,13 +55,27 @@ class TorqueScheduler:
     results = {}
     for job_id in job_ids:
       pattern = re.compile(f"^\\s*{job_id}")
-      last_line = [line for line in output_list if pattern.match(line)][-1]
-      results[job_id] = TorqueScheduler._parse_status(last_line)
+      matched = [line for line in output_list if pattern.match(line)]
+      if matched:
+        results[job_id] = TorqueScheduler._parse_status(matched[-1])
+      else:
+        results[job_id] = ("finished", "not found in qstat")
+    return results
 
   @staticmethod
   def _parse_status(line: str) -> Tuple[str,str]:
-    pass
+    c = line.split()[4]
+    if c == 'Q':
+      return ("queued", line)
+    elif c == 'R' or c == 'T' or c == 'E':
+      return ("running", line)
+    elif c == 'C':
+      return ("finished", line)
+    else:
+      raise Exception(f"unknown format {str}")
 
   @staticmethod
   def delete(job_id: str) -> str:
-    pass
+    cmd = f"qdel {job_id}"
+    result = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE)
+    return result.stdout.decode()
