@@ -1,9 +1,11 @@
 import os,sys
 from . import none
+from . import torque
 
 
 SCHEDULER_TYPES = {
-  "none": none.NoneScheduler
+  "none": none.NoneScheduler,
+  "torque": torque.TorqueScheduler
 }
 
 def create():
