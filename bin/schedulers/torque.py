@@ -35,14 +35,14 @@ class TorqueScheduler:
 
   @staticmethod
   def submit_job(script_path: pathlib.Path, work_dir: pathlib.Path, log_dir: pathlib.Path, log: io.TextIOBase, parameters: dict) -> Tuple[str,str]:
-    cmd = f"qsub {script_path.absolute()} -d {work_dir.absolute()} -o {log_dir.absolute()} -e #{log_dir.absolute()}"
+    cmd = f"qsub {script_path.absolute()} -d {work_dir.absolute()} -o {log_dir.absolute()} -e {log_dir.absolute()}"
     log.write(f"cmd: {cmd}\ntime: {datetime.datetime.now()}")
     result = subprocess.run(cmd, shell=True, check=False, stdout=subprocess.PIPE)
     output = result.stdout.decode()
     if result.returncode != 0:
       log.write(f"rc is not zero: {result.returncode} {output}")
       raise Exception(f"rc is not zero: {output}")
-    job_id = str(int(output.splitlines()[-1]))
+    job_id = output.splitlines()[-1]
     log.write(f"job_id: {job_id}")
     return (job_id, output)
 
