@@ -81,9 +81,10 @@ The specification is identical to that of [the ruby version of xsub](https://git
 - Fork the repository.
 - Add another module in `bin/schedulers` directory. Let's say `your_scheduler.py` is your new module.
   - In your new module, define a new class, say `YourScheduler`, that contains the following constants and static methods.
-    - constants: `TEMPLATE`, `PARAMETERS`
+    - constants: `TEMPLATE`
     - static methods:
       - `validate_parameters(params: dict) -> None`
+      - `parent_script(parametes: dict, job_file: pathlib.Path, work_dir: pathlib.Path) -> str`
       - `submit_job(script_path: pathlib.Path, work_dir: pathlib.Path, log_dir: pathlib.Path, log: io.TextIOBase, parameters: dict) -> tuple[str,str]`
       - `all_status() -> str`
       - `multiple_status(job_ids: list[str]) -> dict[str,tuple[str,str]]`

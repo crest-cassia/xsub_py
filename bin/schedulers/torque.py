@@ -3,13 +3,6 @@ from typing import List,Tuple,Dict
 
 class TorqueScheduler:
 
-  TEMPLATE = '''\
-#!/bin/bash -x
-#PBS -l nodes=<%= mpi_procs.to_i*omp_threads.to_i/ppn.to_i %>:ppn=<%= ppn %>
-#PBS -l walltime=<%= walltime %>
-. <%= _job_file %>
-'''
-
   PARAMETERS = {
     "mpi_procs": { "description": "MPI process", "default": 1, "format": r'^[1-9]\d*$'},
     "omp_threads": { "description": "OMP threads", "default": 1, "format": r'^[1-9]\d*$'},
@@ -26,6 +19,19 @@ class TorqueScheduler:
       raise Exception("mpi_procs, omp_threads, and ppn must be larger than 1")
     if (mpi*omp)%ppn != 0:
       raise Exception("(mpi_procs * omp_threads) must be a multiple of ppn")
+
+  @staticmethod
+  def parent_script(parametes: dict, job_file: pathlib.Path, work_dir: pathlib.Path) -> str:
+    template = '''\
+#!/bin/bash -x
+#PBS -l nodes={nodes}:ppn={ppn}
+#PBS -l walltime={walltime}
+. {job_file}
+'''
+    ppn = int(parametes['ppn'])
+    nodes = int(int(parametes['mpi_procs'])*int(parametes['omp_threads'])/ppn)
+    walltime = parametes['walltime']
+    return template.format(nodes=nodes, ppn=ppn, walltime=walltime, job_file=job_file)
 
   @staticmethod
   def submit_job(script_path: pathlib.Path, work_dir: pathlib.Path, log_dir: pathlib.Path, log: io.TextIOBase, parameters: dict) -> Tuple[str,str]:
