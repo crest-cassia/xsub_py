@@ -19,7 +19,6 @@ scheduler = schedulers.create()
 if parsed.show_template:
   t = {
     "parameters": scheduler.PARAMETERS,
-    "template": scheduler.TEMPLATE.splitlines(keepends=False)
   }
   print(json.dumps(t, indent=2))
   exit(0)
@@ -61,7 +60,7 @@ os.makedirs(work_dir, exist_ok=True)
 os.makedirs(log_dir, exist_ok=True)
 
 def prepare_parent_script(job_file, work_dir, parameters, scheduler):
-  rendered = scheduler.TEMPLATE.format(**parameters, _job_file = job_file, _work_dir = work_dir)
+  rendered = scheduler.parent_script(parameters, job_file, work_dir)
 
   ps_path = work_dir.joinpath(job_file.stem + "_xsub.sh")
   idx = 0

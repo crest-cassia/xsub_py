@@ -8,7 +8,7 @@ To verify that xsub, xstat, xdel are working properly, test the following items.
     ```shell
     $ xsub -t
     ```
-    - Verify output JSON has "parameters" and "template" keys like the following:
+    - Verify output JSON has "parameters" keys like the following (keys other than "parameteres" are optional):
         ```json
         {
           "parameters": {
@@ -22,10 +22,7 @@ To verify that xsub, xstat, xdel are working properly, test the following items.
               "default": 1,
               "format": "^[1-9]\\d*$"
             }
-          },
-          "template": [
-            ". {_job_file}"
-          ]
+          }
         }
         ```
 

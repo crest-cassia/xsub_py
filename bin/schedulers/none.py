@@ -3,10 +3,6 @@ from typing import List,Tuple,Dict
 
 class NoneScheduler:
 
-  TEMPLATE = '''\
-. {_job_file}
-'''
-
   PARAMETERS = {
     "mpi_procs":   { "description": "MPI process", "default": 1, "format": r'^[1-9]\d*$'},
     "omp_threads": { "description": "OMP threads", "default": 1, "format": r'^[1-9]\d*$'}
@@ -17,6 +13,10 @@ class NoneScheduler:
     # check if the given parameters are valid
     # if not valid, raise an Exception
     pass
+
+  @staticmethod
+  def parent_script(parametes: dict, job_file: pathlib.Path, work_dir: pathlib.Path) -> str:
+    return f". {job_file}\n"
 
   @staticmethod
   def submit_job(script_path: pathlib.Path, work_dir: pathlib.Path, log_dir: pathlib.Path, log: io.TextIOBase, parameters: dict) -> Tuple[str,str]:
