@@ -21,16 +21,16 @@ class TorqueScheduler:
       raise Exception("(mpi_procs * omp_threads) must be a multiple of ppn")
 
   @staticmethod
-  def parent_script(parametes: dict, job_file: pathlib.Path, work_dir: pathlib.Path) -> str:
+  def parent_script(parameters: dict, job_file: pathlib.Path, work_dir: pathlib.Path) -> str:
     template = '''\
 #!/bin/bash -x
 #PBS -l nodes={nodes}:ppn={ppn}
 #PBS -l walltime={walltime}
 . {job_file}
 '''
-    ppn = int(parametes['ppn'])
-    nodes = int(int(parametes['mpi_procs'])*int(parametes['omp_threads'])/ppn)
-    walltime = parametes['walltime']
+    ppn = int(parameters['ppn'])
+    nodes = int(int(parameters['mpi_procs'])*int(parameters['omp_threads'])/ppn)
+    walltime = parameters['walltime']
     return template.format(nodes=nodes, ppn=ppn, walltime=walltime, job_file=job_file)
 
   @staticmethod
