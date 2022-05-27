@@ -1,11 +1,13 @@
 import os,sys
 from . import none
 from . import torque
+from . import fugaku
 
 
 SCHEDULER_TYPES = {
   "none": none.NoneScheduler,
-  "torque": torque.TorqueScheduler
+  "torque": torque.TorqueScheduler,
+  "fugaku": fugaku.FugakuScheduler
 }
 
 def create():
