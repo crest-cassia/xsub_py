@@ -34,7 +34,7 @@ class FugakuScheduler:
     shape_total = functools.reduce(lambda x,y: x*y, shape_values)
     max_num_procs = shape_total * max_num_procs_per_node
     if num_procs > max_num_procs:
-      raise Exception("mpi_procs must be less than or equal to #{max_num_procs}")
+      raise Exception(f"mpi_procs must be less than or equal to {max_num_procs}")
 
     low_priority_job = params['low_priority_job']
     if low_priority_job != 'true' and low_priority_job != 'false':
@@ -51,7 +51,7 @@ class FugakuScheduler:
         return 'small-free'
       elif num_nodes <= 55296 and elapse_time_sec <= 43200: # <= 12h
         return 'large-free'
-      else
+      else:
         return ''
     else:
       if num_nodes <= 384 and elapse_time_sec <= 259200: # <= 72h
@@ -71,15 +71,15 @@ class FugakuScheduler:
 #PJM --rsc-list "elapse={elapse}"
 #PJM --mpi "shape={shape}"
 #PJM --mpi "proc={mpi_procs}"
-#PJM --mpi "max-proc-per-node={mpi_max_proc_per_node}"
+#PJM --mpi "max-proc-per-node={max_mpi_procs_per_node}"
 #PJM -s
-. {_job_file}
+. {job_file}
 '''
     rscgrpname = FugakuScheduler._rscgrpname(parameters['node'], parameters['elapse'], parameters['low_priority_job'])
     return template.format(
       node=parameters['node'], rscgrpname=rscgrpname, elapse=parameters['elapse'],
-      shape=parameters['shape'], proc=parameters['mpi_procs'],
-      mpi_max_proc_per_node=parameters['mpi_max_proc_per_node'],
+      shape=parameters['shape'], mpi_procs=parameters['mpi_procs'],
+      max_mpi_procs_per_node=parameters['max_mpi_procs_per_node'],
       job_file = job_file
     )
 
