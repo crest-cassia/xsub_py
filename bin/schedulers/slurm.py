@@ -64,7 +64,7 @@ class SlurmScheduler:
       pattern = re.compile(f"^\\s*{job_id}")
       matched = [line for line in output_list if pattern.match(line)]
       if matched:
-        results[job_id] = TorqueScheduler._parse_status(matched[-1])
+        results[job_id] = SlurmScheduler._parse_status(matched[-1])
       else:
         results[job_id] = ("finished", "not found in squeue")
     return results
