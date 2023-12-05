@@ -2,12 +2,14 @@ import os,sys
 from . import none
 from . import torque
 from . import fugaku
+from . import slurm
 
 
 SCHEDULER_TYPES = {
   "none": none.NoneScheduler,
   "torque": torque.TorqueScheduler,
-  "fugaku": fugaku.FugakuScheduler
+  "fugaku": fugaku.FugakuScheduler,
+  "slurm": slurm.SlurmScheduler
 }
 
 def create():
