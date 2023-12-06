@@ -49,7 +49,7 @@ class SlurmScheduler:
 
   @staticmethod
   def all_status() -> str:
-    cmd = "squeue && sinfo -N"
+    cmd = "squeue"
     result = subprocess.run(cmd, shell=True, check=False, stdout=subprocess.PIPE)
     return result.stdout.decode()
 
@@ -73,7 +73,7 @@ class SlurmScheduler:
   def _parse_status(line: str) -> Tuple[str,str]:
     c = line.split()[4]
     if c == 'PD':
-      return ("queued/pending", line)
+      return ("queued", line)
     elif c == 'R' or c == 'T' or c == 'E':
       return ("running", line)
     elif c == 'C':
