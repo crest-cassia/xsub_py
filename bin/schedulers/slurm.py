@@ -43,7 +43,7 @@ class SlurmScheduler:
     if result.returncode != 0:
       log.write(f"rc is not zero: {result.returncode} {output}")
       raise Exception(f"rc is not zero: {output}")
-    job_id = output.splitlines()[-1]
+    job_id = output.splitlines()[-1].split(" ")[-1]
     log.write(f"job_id: {job_id}")
     return (job_id, output)
 
