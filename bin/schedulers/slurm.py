@@ -36,7 +36,7 @@ class SlurmScheduler:
 
   @staticmethod
   def submit_job(script_path: pathlib.Path, work_dir: pathlib.Path, log_dir: pathlib.Path, log: io.TextIOBase, parameters: dict) -> Tuple[str,str]:
-    cmd = f"sbatch {script_path.absolute()} -D {work_dir.absolute()} -o {log_dir.absolute()} -e {log_dir.absolute()}"
+    cmd = f"sbatch -D {work_dir.absolute()} -o {log_dir.absolute()}/xsub.log -e {log_dir.absolute()}/xsub.log {script_path.absolute()}"
     log.write(f"cmd: {cmd}\ntime: {datetime.datetime.now()}")
     result = subprocess.run(cmd, shell=True, check=False, stdout=subprocess.PIPE)
     output = result.stdout.decode()
