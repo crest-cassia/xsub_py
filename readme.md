@@ -37,10 +37,12 @@ List of available schedulers.
 - **torque**
   - [Torque](http://www.adaptivecomputing.com/products/open-source/torque/)
   - `qsub`, `qstat`, `qdel` commands are used.
+- **slurm**
+  - [SLURM](https://slurm.schedmd.com/)
+  - `sbatch`, `squeue`, `scancel` commands are used.
 - **fugaku**
   - Fugaku
   - `pjsub`, `pjstat`, `pjdel` commands are used.
-
 
 ## Contact
 
