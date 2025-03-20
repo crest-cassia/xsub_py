@@ -42,8 +42,12 @@ def verify_parameters(parameters, scheduler):
 
   # verify parameter format
   for (key,definition) in scheduler.PARAMETERS.items():
-    if not re.match(definition["format"], str(params[key])):
-      raise Exception(f"invalid parameter format: {key} {params[key]} {definition['format']}")
+    if "format" in definition:
+      if not re.match(definition["format"], str(params[key])):
+        raise Exception(f"invalid parameter format: {key} {params[key]} {definition['format']}")
+      if "options" in definition:
+        if not params[key] in definition["options"]:
+          raise Exception(f"invalid parameter value: {key} {params[key]} {definition['options']}")
 
   # scheduler-specific validation of parameters
   scheduler.validate_parameters(params)

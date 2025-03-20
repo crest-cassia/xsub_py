@@ -1,8 +1,9 @@
 # xsub-py
 
 Another implementation of [xsub](https://github.com/crest-cassia/xsub) in Python.
-XSUB is a wrapper for job schedulers. Job schedulers used in HPCs, such as Torque, often have its own I/O format.
-Users have to change their scripts to conform with its dialect. This is a wrapper script to absorb the difference.
+XSUB is a wrapper for job schedulers. Job schedulers used in HPCs, such as Torque.
+Since, those job schedulers often have its own I/O format and the users have to change their scripts to conform with its dialect.
+XSUB is a wrapper script to absorb the difference.
 This script is intended to be used by [OACIS](https://github.com/crest-cassia/oacis).
 
 Although only a few types of schedulers are currently supported, you can extend xsub easily to support other schedulers.
@@ -101,7 +102,7 @@ The specification is identical to that of [the ruby version of xsub](https://git
     +  "your_scheduler": your_scheduler.YourScheduler
     }
     ```
-- After you implemented your scheduler class, test following the instructions [here](test/instruction.md).
+- After you implemented your scheduler class, implement the unit test following the instructions [here](test/readme.md).
 - set `XSUB_TYPE` environment variable to your new module name.
   - add `XSUB_TYPE=your_scheduler` to your `.bash_profile`. (case-insensitive)
 - We would appreciate it if you send us your enhancement as a pull request:grin:
