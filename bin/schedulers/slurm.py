@@ -7,7 +7,9 @@ class SlurmScheduler:
     "mpi_procs": { "description": "MPI process", "default": 1, "format": r'^[1-9]\d*$'},
     "omp_threads": { "description": "OMP threads", "default": 1, "format": r'^[1-9]\d*$'},
     "ppn": { "description": "Process per nodes", "default": 1, "format": r'^[1-9]\d*$'},
-    "walltime": { "description": "Limit on elapsed time", "default": "24:00:00", "format": r'^\d+:\d{2}:\d{2}$'}
+    "walltime": { "description": "Limit on elapsed time", "default": "24:00:00", "format": r'^\d+:\d{2}:\d{2}$'},
+    "partition": { "description": "Slurm partition on which to launch the job, leave empty to use the default partition", "default": "", "format": r'\w*'},
+    "exclusive": { "description": "Specifies if the allocated node should remain exclusive to this job, even if there remains allocated threads that could be used by another job", "default": 'false', "options": ["true", "false"] }
   }
 
   @staticmethod
@@ -19,6 +21,7 @@ class SlurmScheduler:
       raise Exception("mpi_procs, omp_threads, and ppn must be larger than 1")
     if (mpi*omp)%ppn != 0:
       raise Exception("(mpi_procs * omp_threads) must be a multiple of ppn")
+    # No particular checks made on "partition" or "exclusive" parameter
 
   @staticmethod
   def parent_script(parameters: dict, job_file: pathlib.Path, work_dir: pathlib.Path) -> str:
@@ -27,12 +30,23 @@ class SlurmScheduler:
 #SBATCH --nodes={nodes}
 #SBATCH --ntasks-per-node={ppn}
 #SBATCH --time={walltime}
+{partition_setting}
+{exclusive_setting}
 . {job_file}
 '''
     ppn = int(parameters['ppn'])
     nodes = int(int(parameters['mpi_procs'])*int(parameters['omp_threads'])/ppn)
     walltime = parameters['walltime']
-    return template.format(nodes=nodes, ppn=ppn, walltime=walltime, job_file=job_file)
+    partition = parameters['partition']
+    exclusive = parameters['exclusive'] == 'true'
+
+    if partition:
+      # If partition was set, then we add the line to the script template
+      partition = f"#SBATCH --partition={partition}"
+    if exclusive:
+      # If exclusive option was set to true, we set this option in the script template
+      exclusive = f"#SBATCH --exclusive"
+    return template.format(nodes=nodes, ppn=ppn, walltime=walltime, job_file=job_file, partition_setting=partition, exclusive_setting=exclusive)
 
   @staticmethod
   def submit_job(script_path: pathlib.Path, work_dir: pathlib.Path, log_dir: pathlib.Path, log: io.TextIOBase, parameters: dict) -> Tuple[str,str]:
