@@ -40,12 +40,10 @@ class SlurmScheduler:
     partition = parameters['partition']
     exclusive = parameters['exclusive'] == 'true'
 
-    if partition:
-      # If partition was set, then we add the line to the script template
-      partition = f"#SBATCH --partition={partition}"
-    if exclusive:
-      # If exclusive option was set to true, we set this option in the script template
-      exclusive = f"#SBATCH --exclusive"
+    # If partition is set, then add the line to the script template
+    partition = f"#SBATCH --partition={partition}" if partition else ""
+    # If exlusive option is set to true, then add the line to the script template
+    exclusive = f"#SBATCH --exclusive" if exclusive else ""
     return template.format(nodes=nodes, ppn=ppn, walltime=walltime, job_file=job_file, partition_setting=partition, exclusive_setting=exclusive)
 
   @staticmethod
