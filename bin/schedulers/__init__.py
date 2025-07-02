@@ -3,13 +3,15 @@ from . import none
 from . import torque
 from . import fugaku
 from . import slurm
+from . import pbs_pro
 
 
 SCHEDULER_TYPES = {
   "none": none.NoneScheduler,
   "torque": torque.TorqueScheduler,
   "fugaku": fugaku.FugakuScheduler,
-  "slurm": slurm.SlurmScheduler
+  "slurm": slurm.SlurmScheduler,
+  "pbs_pro": pbs_pro.PBSProScheduler
 }
 
 def create():
