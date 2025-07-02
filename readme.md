@@ -44,6 +44,9 @@ List of available schedulers.
 - **fugaku**
   - Fugaku
   - `pjsub`, `pjstat`, `pjdel` commands are used.
+- **pbs_pro**
+  - [PBS Pro](https://altair.com/pbs-professional/)
+  - `qsub`, `qstat`, `qdel` commands are used. 
 
 ## Contact
 
